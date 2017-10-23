@@ -1,11 +1,18 @@
+%initialize parameters
 fs = 16000;
 t = [0:1/fs:2];
 t = t';
+
+%create signal
 sig = sin(400*2*pi*t); ;
 %sig = awgn(sig,100); %met witte ruis
+
+%create output
 [simin, nbsecs, fs] = initparams(sig, fs);
 sim('recplay');
 out = simout.signals.values;
+
+%plot
 plot(out);
 
 simin(1:1000,1) %input

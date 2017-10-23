@@ -11,7 +11,10 @@ impulse(1,1) = 1;
 sim('recplay');
 out = simout.signals.values;
 %soundsc(out,fs);
+
 %plot
+figure('NumberTitle', 'off', 'Name', 'IR1');
+
 subplot(211);
 plot(out);
 xlabel('samples');
