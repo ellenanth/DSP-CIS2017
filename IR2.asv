@@ -12,4 +12,4 @@ simin(1:1000,1) %input
 out(1:80001) %output
 h = zeros(80001,1);
 
-x_matrix = toeplitz(simin(1000:end,1)',fliplr(simin(1:1000,1)'));
+%x_matrix = toeplitz(simin(1000:end,1))',
