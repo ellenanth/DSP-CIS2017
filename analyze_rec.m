@@ -5,11 +5,11 @@ t = t';
 dftsize = 512;
 
 %create signal
-sig = sin(400*2*pi*t); % zonder DC component
+%sig = sin(400*2*pi*t); % zonder DC component
 %sig = 0.5*sin(400*2*pi*t) + 0.5; %met DC-component geschaald
 %sig = sin(400*2*pi*t) + 0.5; %met DC-component, niet geschaald
-%sig = sin(100*2*pi*t)+sin(200*2*pi*t)+sin(500*2*pi*t)+sin(1000*2*pi*t)+sin(2000*2*pi*t)+sin(4000*2*pi*t)+sin(6000*2*pi*t);
-sig = awgn(sig,30); %met witte ruis
+sig = sin(100*2*pi*t)+sin(200*2*pi*t)+sin(500*2*pi*t)+sin(1000*2*pi*t)+sin(2000*2*pi*t)+sin(4000*2*pi*t)+sin(6000*2*pi*t);
+%sig = awgn(sig,30); %met witte ruis
 %sig = sin(0.001*2*pi*t); %met DC-component, niet geschaald
 
 %create output
