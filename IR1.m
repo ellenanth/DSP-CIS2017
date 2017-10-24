@@ -1,6 +1,8 @@
 fs = 16000;
 t = [0:1/fs:2];
 t = t';
+sample_start = 32000;
+sample_end = 40000;
 
 %define input signal
 impulse = zeros(length(t),1);
@@ -25,9 +27,6 @@ subplot(412);
 plot(out);
 xlabel('samples');
 title('impulse response in time domain');
-
-sample_start = 32000;
-sample_end = 37000;
 
 subplot(413);
 plot(out);

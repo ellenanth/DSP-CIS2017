@@ -12,9 +12,10 @@ sig = sin(400*2*pi*t);
 sim('recplay');
 out = simout.signals.values;
 
-%plot
+%plot recorded signal
 plot(out);
 
+%create toeplitz
 simin(1:1000,1); %input
 out(1:80001); %output
 h = zeros(80001,1);
