@@ -1,7 +1,7 @@
 fs = 16000;
 t = [0:1/fs:2];
 t = t';
-sample_start = 32000;
+sample_start = 36000;
 sample_end = 40000;
 
 %define input signal
@@ -30,7 +30,7 @@ title('impulse response in time domain');
 
 subplot(413);
 plot(out);
-axis([sample_start sample_end -0.1 0.1]);
+axis([sample_start sample_end -0.01 0.01]);
 xlabel('samples');
 title('impulse response in time domain');
 

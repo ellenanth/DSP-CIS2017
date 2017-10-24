@@ -1,5 +1,5 @@
-IR1;
-IR = out(sample_start:sample_end, 1);
+IR2;
+IR = h;
 analyze_rec;
 out_estimated = fftfilt(IR, simin);
 out_recorded = out;
