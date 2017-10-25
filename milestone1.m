@@ -73,7 +73,7 @@ subplot(211);
 plot(h);
 %axis([sample_start sample_end -0.01 0.01]);
 xlabel('samples');
-title('impulse response in time domain');
+title('impulse response (IR2) in time domain');
 
 %calculate and plot magnitude response
 subplot(212);
@@ -95,7 +95,7 @@ subplot(211);
 plot(out);
 axis([sample_start sample_end -0.01 0.01]);
 xlabel('samples');
-title('impulse response in time domain');
+title('impulse response (IR1) in time domain');
 
 %calculate and plot magnitude response
 subplot(212);
