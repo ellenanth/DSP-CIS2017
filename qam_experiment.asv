@@ -17,4 +17,4 @@ scatterplot(seq_mod_noise);
 
 seq_demodulated = qam_demod(seq_mod_noise, N_q, N);
 BER_cal = ber(seq, seq_demodulated);
-disp("SNR = " + SNR + ", N_q = " + N_q + " => " + BER_cal);
+disp("result for SNR = " + SNR + ", N_q = + BER_cal);

@@ -1,5 +1,6 @@
 %demodulate the given N_q-QAM sequence seq back to the original sequence
 %N_q is maximaal 6
+%original_length is needed to cut of padded zeros at the end
 function [seq_demod] = qam_demod(seq_mod, N_q, original_length) 
     M = 2^N_q;
     
