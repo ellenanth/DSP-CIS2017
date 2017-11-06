@@ -1,7 +1,7 @@
 %modulate the given sequence seq to a OFDM sequence
 %P = total number of frames in a packet
 %N_q is used for the QAM modulation to construct the frames
-function [ofdm_seq] = ofdm_mod_1(seq, P, N_q)    
+function [ofdm_seq] = ofdm_mod(seq, P, N_q)    
     %define nb_zeros_ofdm as total number of zeros to add to the original
     %data so the data fits in P frames of size N and the QAM doesn't need
     %padding anymore as length(seq) is a multiple of N_q
