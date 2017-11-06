@@ -3,21 +3,19 @@
 %N = total numbers per frame
 %N_q is used for the QAM modulation to construct the frames
 function [ofdm_seq] = ofdm_mod(seq, P, N_q)    
-    %define nb_zeros_ofdm as total number of zeros to add to the original
-    %data so the data fits in P frames of size N and the QAM doesn't need
-    %padding anymore as length(seq) is a multiple of N_q
+    %TODO define frame size N, N must be even
+    %TODO padding seq with zeros to fit the sizes
+    %N = 18; %example for length(seq)=64, N_q = 4, P=2
     nb_zeros_qam = mod(N_q - mod(length(seq),N_q), N_q);
-    length_seq_qam = (length(seq)+nb_zeros_qam)/N_q;
+    length_seq_qam = length(seq)+nb_zeros_qam;
     N = 2 * ( ceil( length_seq_qam/P ) + 1 );
     length_seq_ofdm = P * (N/2-1) * N_q;
-    nb_zeros_ofdm = length_seq_ofdm - length(seq);
-    %N = 18; %example for length(seq)=64, N_q = 4, P=2 
-    
-    %padding the original sequence with zeros at the end
-    seq = [seq, zeros(1,nb_zeros_ofdm)];
+    nb_zeros_ofdm = length(se
     
     %QAM-modulation
-    QAM_seq = qam_mod(seq, N_q);   
+    QAM_seq = qam_mod(seq, N_q);
+    disp(QAM_seq);
+    
     
     
     %fill each frame
