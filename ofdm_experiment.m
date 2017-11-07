@@ -12,3 +12,5 @@ seq_modulated_1 = ofdm_mod(seq, P, N_q);
 %(tiny difference in padding with zeros)
 QAM_seq = qam_mod(seq, N_q);
 seq_modulated_2 = ofdm_mod_2(QAM_seq, P, N_q);
+
+seq_demodulated_1 = ofdm_demod(seq_modulated_1, P, N_q, length(seq));
