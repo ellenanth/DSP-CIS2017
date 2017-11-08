@@ -1,7 +1,7 @@
 %modulate the given sequence seq to a OFDM sequence
 %P = total number of frames in a packet
 %N_q is used for the QAM modulation to construct the frames
-function [ofdm_seq] = ofdm_mod(seq, P, N_q,cyclic_prefix)    
+function [ofdm_seq] = ofdm_mod(seq, P, N_q)    
     %define nb_zeros_ofdm as total number of zeros to add to the original
     %data so the data fits in P frames of size N and the QAM doesn't need
     %padding anymore as length(seq) is a multiple of N_q
@@ -10,14 +10,13 @@ function [ofdm_seq] = ofdm_mod(seq, P, N_q,cyclic_prefix)
     N = 2 * ( ceil( length_seq_qam/P ) + 1 );
     length_seq_ofdm = P * (N/2-1) * N_q;
     nb_zeros_ofdm = length_seq_ofdm - length(seq);
-    length_cyclic_prefix = length(cyclic_prefix);
+    %length_cyclic_prefix = length(cyclic_prefix);
     
     %padding the original sequence with zeros at the end
     seq = [seq, zeros(1,nb_zeros_ofdm)];
     
     %QAM-modulation
-    QAM_seq = qam_mod(seq, N_q);   
-    
+    QAM_seq = qam_mod(seq, N_q);     
     
     %fill each frame
     packet = zeros(N, P);
@@ -33,7 +32,7 @@ function [ofdm_seq] = ofdm_mod(seq, P, N_q,cyclic_prefix)
         %IFFT per frame
         packet(:,i_P) = ifft(packet(:,i_P));
         
-        cyclic_matrix = zeros(length_cyclic_prefix,P);
+%         cyclic_matrix = zeros(length_cyclic_prefix,P);
         
         
         %parallel to serial conversion

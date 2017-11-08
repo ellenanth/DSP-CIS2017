@@ -6,14 +6,7 @@ SNR = 3; %signal to noise ratio for the AWGN (additive white gaussian noise)
 seq = randi([0,1], 1, N);
 
 %option 1: QAM included in OFDM function
-seq_modulated_1 = ofdm_mod(seq, P, N_q);
-seq_demodulated_1 = ofdm_demod(seq_modulated_1, P, N_q, N);
+seq_modulated = ofdm_mod(seq, P, N_q);
+seq_demodulated = ofdm_demod(seq_modulated, P, N_q, N);
 
-BER_cal = ber(seq, seq_demodulated_1);
-
-
-%option 2: QAM excluded form OFDM function
-%(tiny difference in padding with zeros)
-%QAM_seq = qam_mod(seq, N_q);
-%seq_modulated_2 = ofdm_mod_2(QAM_seq, P, N_q);
-%seq_demodulated_1 = ofdm_demod(seq_modulated_1, P, N_q, length(seq));
+BER_cal = ber(seq, seq_demodulated);
