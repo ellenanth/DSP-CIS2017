@@ -7,9 +7,9 @@ N_q = 4;
 L_prefix = 20;
 L = 10;
 %impulse_response = randi([0,50], 1, L+1);
-%impulse_response = [1000 950 950 700 400 300 200 100 50 25 10];
+impulse_response = [1000 950 950 
 %impulse_respons = rand(1,L+1);
-%impulse_response = [1,zeros(1,L)];
+%impulse_response = [1, zeros(1,L)];
 %impulse_response = ones(1,L+1);
 
 % Convert BMP image to bitstream
