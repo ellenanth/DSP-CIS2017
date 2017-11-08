@@ -8,6 +8,7 @@ seq = randi([0,1], 1, N);
 
 %option 1: QAM included in OFDM function
 seq_modulated = ofdm_mod(seq, P, N_q, L);
+seq_modulated = awgn(seq_modulated,SNR);
 seq_demodulated = ofdm_demod(seq_modulated, P, N_q, L, N);
 
 BER_cal = ber(seq, seq_demodulated);
