@@ -34,6 +34,7 @@ function [ofdm_seq] = ofdm_mod(seq, P, N_q,cyclic_prefix)
         packet(:,i_P) = ifft(packet(:,i_P));
         
         cyclic_matrix = zeros(length_cyclic_prefix,P);
+        for 
         
         
         %parallel to serial conversion

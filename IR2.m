@@ -50,3 +50,4 @@ f = -fs/2:dF:fs/2-dF;
 plot(f,10*log10(fourrier)); %nog delen door length(out)?
 xlabel('Frequency (in hertz)');
 title('Magnitude Response');
+
