@@ -2,7 +2,8 @@
 %P = total number of frames in a packet
 %N_q is used for the QAM modulation to construct the frames
 %L = length of cyclic prefix
-function [ofdm_seq] = ofdm_mod(seq, P, N_q, L)    
+function [ofdm_seq] = ofdm_mod(seq, P, N_q, L, ...
+    channel_frequency_response, bit_loading_on)    
     %define nb_zeros_ofdm as total number of zeros to add to the original
     %data so the data fits in P frames of size N and the QAM doesn't need
     %padding anymore as length(seq) is a multiple of N_q

@@ -2,7 +2,8 @@
 %N_q is maximaal 6
 %original_length is needed to cut of padded zeros at the end
 %L = length of cyclic prefix
-function [seq_demod] = ofdm_demod(seq_mod, P, N_q, L, original_length) 
+function [seq_demod] = ofdm_demod(seq_mod, P, N_q, L, original_length, ...
+                            channel_frequency_response, scaling_on) 
     %serial-to-parallel conversion
     N = (length(seq_mod))/P - L;
     packet = zeros(N+L,P);
@@ -18,9 +19,22 @@ function [seq_demod] = ofdm_demod(seq_mod, P, N_q, L, original_length)
     %cut off cyclic prefix
     packet = packet((L+1):N+L, :);
     
+    if scaling_on
+        L1 = N; %lenght packet
+        L2 = length(channel_frequency_response);
+        channel_frequency_response = [channel_frequency_response;...
+                        ones(L1-L2,1)];
+    end
+    
     for i_P = 1:P
         % FFT operation
         packet(:,i_P) = fft(packet(:,i_P));
+        
+        % scale components with the inverse of the given chennel frequency
+        % response
+        if scaling_on
+            packet (:,i_P) = packet(:,i_P) ./ (channel_frequency_response);
+        end
         
         % retrieve QAM sequence
         start_QAM = (i_P-1) * (N/2-1) + 1;
