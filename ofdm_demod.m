@@ -1,13 +1,24 @@
 %demodulate the given OFDM sequence seq back to the original sequence
-%N_q is maximaal 6
-%original_length is needed to cut of padded zeros at the end
+%parameters:
+%seq_mod = de modulated sequence to demodulate
+%N = length of each frame in a packet, must be even
+%N_q: 2^N_q is the constellation size for the QAM modulation, max. 6
 %L = length of cyclic prefix
-function [seq_demod] = ofdm_demod(seq_mod, P, N_q, L, original_length, ...
-                            channel_frequency_response, scaling_on) 
+%original_length of the sequence needed to cut of padded zeros at the end
+%channel_frequency_response
+%scaling_on
+%used carriers = row vector with indices of the used carrier frequencies
+function [seq_demod] = ofdm_demod(seq_mod, N, N_q, L, original_length, ...
+                            channel_frequency_response, scaling_on, ...
+                            used_carriers)    
+    %default value for used_carriers
+    if ~exists(used_carriers)
+        used_carriers = [1:(N/2-1)];
+    end
+    
     %serial-to-parallel conversion
-    N = (length(seq_mod))/P - L;
+    P = (length(seq_mod)) / (N+L);
     packet = zeros(N+L,P);
-    QAM_seq = zeros(1, (N/2-1)*P );
 
     for i_P = 1:P
         %fill frames in packet
@@ -26,17 +37,22 @@ function [seq_demod] = ofdm_demod(seq_mod, P, N_q, L, original_length, ...
                         ones(L1-L2,1)];
     end
     
+    %retrieve QAM sequence
+    nb_data = length(used_carriers);
+    QAM_seq = zeros(1, nb_data*P );
+    
     for i_P = 1:P
         % FFT operation
         packet(:,i_P) = fft(packet(:,i_P));
         
-        % scale components with the inverse of the given chennel frequency
+        % scale components with the inverse of the given channel frequency
         % response
         if scaling_on
             packet (:,i_P) = packet(:,i_P) ./ (channel_frequency_response);
         end
         
         % retrieve QAM sequence
+        %TODO only retrieve values from used carriers
         start_QAM = (i_P-1) * (N/2-1) + 1;
         end_QAM = start_QAM + N/2 - 2;
         QAM_seq(1, start_QAM:end_QAM) = transpose( packet(2:(N/2), i_P) ); 
@@ -46,7 +62,6 @@ function [seq_demod] = ofdm_demod(seq_mod, P, N_q, L, original_length, ...
     % demodulate QAM sequence
     seq_demod = qam_demod(QAM_seq, N_q, original_length); 
     
-    %nullen wegdoen om terug orignele lengte te krijgen
-    %TODO kan dit weg?
+    % remove padded zeros
     seq_demod = seq_demod(1,1:original_length);
 end
