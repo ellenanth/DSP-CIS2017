@@ -1,38 +1,55 @@
+%% parameters
 %initialize parameters
 fs = 16000;
+
+IR_size;
+temp = matfile('IRest.mat');
+L = temp.N_IR;
+
 t = [0:1/fs:2];
 t = t';
 
 %create signal
-sig = sin(400*2*pi*t);
-sig = awgn(sig,100); %met witte ruis
+sig = awgn(0*t,100); %WGN-signal
 
+%% simulink
 %create output
 [simin, nbsecs, fs] = initparams(sig, fs);
 sim('recplay');
 out = simout.signals.values;
 
-% %plot recorded signal
-% plot(out);
-% 
-% %create toeplitz
-% simin(1:1000,1); %input
-% out(1:80001); %output
-% h = zeros(80001,1);
-% 
-% x_matrix = toeplitz(simin(1000:end,1)',fliplr(simin(1:1000,1)'));
+%% synchronization
+%shift 'out' to the left to cancel out channel latency
+[Y, I] = max(out);
+limit_value = 1/20 * Y;
 
-%create system of equations
+%start looking for the start of the signal at the sample when
+%we started transmitting and scan to the right
+i = 2 * fs;
+while (out(i,1) < limit_value)
+    i = i + 1;
+end
+sample_start = i;
+
+shift = sample_start - 2*fs;
+% shift = shift - 10; %take some margin
+
+out = out(shift:length(out), 1);
+simin = simin(1:(length(simin)-shift), 1);
+%% create system of equations
 k = 38000;
 K = 8000;
-L = 1000;
+%L = 1000;
 x_matrix = toeplitz(simin(k:k+K, 1), fliplr(simin(k-L:k,1))');
 y = out(k:k+K,1);
 
-%solve system Ax=b
+%% solve system Ax=b
 h = x_matrix\y;
 
-%plot inputs and outputs
+%% save h
+save('IRest.mat','h');
+
+%% plot inputs and outputs
 figure(1);
 
 subplot(211);

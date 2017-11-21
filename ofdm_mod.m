@@ -25,7 +25,7 @@ function [ofdm_seq] = ofdm_mod(seq, N, N_q, L, ...
     end
 
     %the number of data bits in one frame
-    if ~exists(used_carriers)
+    if ~exist('used_carriers', 'var')
         used_carriers = [1:(N/2-1)];
     end
     nb_data = length(used_carriers);
