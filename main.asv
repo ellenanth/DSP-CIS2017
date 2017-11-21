@@ -2,14 +2,14 @@
 %% variables
 
 %impulse response
-IRest = matfile('IRest.mat');
-impulse_response = IRest.h;
+% IRest = matfile('IRest.mat');
+% impulse_response = IRest.h;
 
 % t = 1:115;
 % t = t';
 % impulse_response =  exp(-0.1*t) .* sin(t);
 
-% impulse_response = [1;zeros(115,1)]; %ideal channel
+impulse_response = [1;zeros(115,1)]; %ideal channel
 
 
 % User-defined parameters
@@ -22,8 +22,8 @@ N_frame = 6*L_prefix;  %length of each frame in a packet
 
 % test settings
 scaling_on = true;
-add_noise = true;
-SNR = 80;       %signal to noise ratio of the added noise
+add_noise = false;
+SNR = 20;       %signal to noise ratio of the added noi
 bit_loading_on = false;
 %% calculations
 % Convert BMP image to bitstream

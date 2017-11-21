@@ -16,6 +16,15 @@ function [seq_demod] = ofdm_demod(seq_mod, N, N_q, L, original_length, ...
         used_carriers = [1:(N/2-1)];
     end
     
+    %calculate channel frequency responses
+    if scaling_on
+        input = [ impulse_response ; ...
+                     zeros(N-length(impulse_response),1) ];
+        H_n = fft( [ impulse_response ; ...
+                     zeros(N-length(impulse_response),1) ] );
+       
+    end
+    
     %serial-to-parallel conversion
     P = (length(seq_mod)) / (N+L);
     packet = zeros(N+L,P);
@@ -30,13 +39,6 @@ function [seq_demod] = ofdm_demod(seq_mod, N, N_q, L, original_length, ...
     %cut off cyclic prefix
     packet = packet((L+1):N+L, :);
     
-    if scaling_on
-        L1 = N; %lenght packet
-        L2 = length(channel_frequency_response);
-        channel_frequency_response = [channel_frequency_response;...
-                        ones(L1-L2,1)];
-    end
-    
     %retrieve QAM sequence
     nb_data = length(used_carriers);
     QAM_seq = zeros(1, nb_data*P );
@@ -47,11 +49,31 @@ function [seq_demod] = ofdm_demod(seq_mod, N, N_q, L, original_length, ...
         
         % scale components with the inverse of the given channel frequency
         % response
+%         if scaling_on
+%             %define system based on impulse response
+% %             NUM = impulse_response';
+% %             DEN = [1, zeros(1, length(impulse_response)-1)];
+% %             SYS = tf(NUM, DEN);
+%             SYS = tf(impulse_response',[1],1/16000,'Variable','z^-1');
+%             %define used frequencies
+%             used_frequencies = (2*pi) ./ used_carriers;
+%             %calculate channel frequency response
+%             channel_frequency_response = freqresp(SYS, used_frequencies);
+%             % scale components with the inverse of the channel 
+%             % frequency response
+%             for i = 1:nb_data
+%                 carrier = used_carriers(1,i);
+%                 packet(carrier,i_P) = packet(carrier,i_P) / ...
+%                     channel_frequency_response(1,i);
+%                 packet(N-carrier+1, i_P) = packet(N-carrier+1,i_P) / ...
+%                     channel_frequency_response(1,i);
+%             end
+%         end
+
         if scaling_on
-            used_frequencies = 1 ./ used_carriers .* (2*PI);
-            SYS 
-            channel_frequency_response = freqresp(SYS, used_frequencies);
-            packet (:,i_P) = packet(:,i_P) ./ (channel_frequency_response);
+            [a,b] = size(packet(:,i_P));
+            disp(a + ", " + b);
+            packet(:,i_P) = packet(:,i_P) ./ H_n;
         end
         
         % only retrieve values from used carriers

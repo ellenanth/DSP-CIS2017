@@ -16,6 +16,12 @@ function [seq_demod] = ofdm_demod(seq_mod, N, N_q, L, original_length, ...
         used_carriers = [1:(N/2-1)];
     end
     
+    %calculate channel frequency responses
+    if scaling_on
+        H_n = fft( [ impulse_response ; ...
+                     zeros(N-length(impulse_response),1) ] );
+    end
+    
     %serial-to-parallel conversion
     P = (length(seq_mod)) / (N+L);
     packet = zeros(N+L,P);
@@ -30,13 +36,6 @@ function [seq_demod] = ofdm_demod(seq_mod, N, N_q, L, original_length, ...
     %cut off cyclic prefix
     packet = packet((L+1):N+L, :);
     
-    if scaling_on
-        L1 = N; %lenght packet
-        L2 = length(channel_frequency_response);
-        channel_frequency_response = [channel_frequency_response;...
-                        ones(L1-L2,1)];
-    end
-    
     %retrieve QAM sequence
     nb_data = length(used_carriers);
     QAM_seq = zeros(1, nb_data*P );
@@ -45,13 +44,10 @@ function [seq_demod] = ofdm_demod(seq_mod, N, N_q, L, original_length, ...
         % FFT operation
         packet(:,i_P) = fft(packet(:,i_P));
         
-        % scale components with the inverse of the given channel frequency
+        % scale components with the inverse of the channel frequency
         % response
         if scaling_on
-            used_frequencies = 1 ./ used_carriers .* (2*PI);
-            SYS = 1; %TODO define system based on impulse response
-            channel_frequency_response = freqresp(SYS, used_frequencies);
-            packet (:,i_P) = packet(:,i_P) ./ (channel_frequency_response);
+            packet(:,i_P) = packet(:,i_P) ./ H_n;
         end
         
         % only retrieve values from used carriers
