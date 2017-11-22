@@ -1,0 +1,10 @@
+N = 16000;
+N_q = 6;
+seq = randi([0,1], 1, N_q/2*N-N_q);
+
+seq_100 = zeros(1, 100*N);
+for i = 1:100
+    seq_100(i*100, 
+end
+Tx = ofdm_mod(seq,N,N_q,0,[1:(N/2-1)]);
+% trainblock = qam_mod(seq,N_q);

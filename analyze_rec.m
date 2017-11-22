@@ -26,7 +26,7 @@ sim('recplay');
 out = simout.signals.values;
 
 %% analyse recording
-% plot spectogram of played and recorded signal
+% plot spectrogram of played and recorded signal
 [S_sig,F_sig,T_sig,P_sig] = spectrogram(simin(:,1) , dftsize, dftsize/2, dftsize, fs,'yaxis');
 [S_out,F_out,T_out,P_out] = spectrogram(out(:,1) , dftsize, dftsize/2, dftsize, fs,'yaxis');
 
