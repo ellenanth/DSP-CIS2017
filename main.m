@@ -20,11 +20,11 @@ L_prefix = L+20;  %length of the cyclic prefix (should be longer than L)
                 % and significantly shorter than N_frame
 N_frame = 6*L_prefix;  %length of each frame in a packet
 
-% test settings
-scaling_on = true;
-add_noise = true;
-SNR = 80;       %signal to noise ratio of the added noise
-bit_loading_on = false;
+% % test settings
+% scaling_on = true;
+% add_noise = true;
+% SNR = 80;       %signal to noise ratio of the added noise
+% bit_loading_on = false;
 %% calculations
 % Convert BMP image to bitstream
 [bitStream, imageData, colorMap, imageSize, bitsPerPixel] = ...

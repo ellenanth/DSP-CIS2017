@@ -7,17 +7,6 @@
 %used carriers = row vector with indices of the used carrier frequencies
 function [ofdm_seq] = ofdm_mod(seq, N, N_q, L, ...
     used_carriers)    
-%     %define nb_zeros_ofdm as total number of zeros to add to the original
-%     %data so the data fits in P frames of size N and the QAM doesn't need
-%     %padding anymore as length(seq) is a multiple of N_q
-%     nb_zeros_qam = mod(N_q - mod(length(seq),N_q), N_q);
-%     length_seq_qam = (length(seq)+nb_zeros_qam)/N_q;
-%     N = 2 * ( ceil( length_seq_qam/P ) + 1 );
-%     length_seq_ofdm = P * (N/2-1) * N_q;
-%     nb_zeros_ofdm = length_seq_ofdm - length(seq);
-    
-%     %padding the original sequence with zeros at the end
-%     seq = [seq, zeros(1,nb_zeros_ofdm)];
 
     %check if N is even
     if mod(N,2) ~= 0
@@ -43,14 +32,7 @@ function [ofdm_seq] = ofdm_mod(seq, N, N_q, L, ...
     
     %fill each frame in the packet
     packet = zeros(N, P);
-    for i_P = 1:P
-%         %fill in QAM signals, keep zeros on DC and Nyquist frequencies
-%         start_QAM = (i_P-1) * nb_data;
-%         for i_N = 1:end_N
-%             packet(i_N+1, i_P) = QAM_seq(start_QAM + i_N); %fill in value from QAM
-%             packet(N-i_N+1, i_P) = conj( QAM_seq(start_QAM + i_N) ); %fill in value from QAM*
-%         end
-    
+    for i_P = 1:P    
         %fill in QAM signals while keeping zeros on DC and Nyquist
         %frequencies, also keep zeros on non-used carrier frequencies
         start_QAM = (i_P-1) * nb_data;
