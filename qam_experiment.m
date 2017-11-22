@@ -9,7 +9,7 @@ function [BER_cal] = qam_experiment(N, N_q, SNR)
     %hogere N_q betekent hogere bit-rate
     %average signal power? normalization to unit power?
 
-    seq_mod_noise = awgn(seq_modulated, SNR);
+    seq_mod_noise = awgn(seq_modulated, SNR, "measured");
     %scatterplot(seq_mod_noise);
     %hogere constellation size betekent minder grote hamming-afstand tussen de
     %verschillende punten, en dus minder marge om fouten te maken

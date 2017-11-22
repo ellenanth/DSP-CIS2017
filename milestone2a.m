@@ -1,6 +1,6 @@
 N = 200;          %sequence length
 nb_it = 100;      %number of iterations
-SNR_max = 10;     %the maximum SNR to check
+SNR_max = 50;     %the maximum SNR to check
 
 results = zeros(6, SNR_max);
 for SNR = 1:SNR_max

@@ -24,7 +24,7 @@ function [seq_demod] = ofdm_demod(seq_mod, N, N_q, L, original_length, ...
     end
     
     %serial-to-parallel conversion
-    %TODO gebruik functies van matlab tutorial
+    %TODO 
     P = (length(seq_mod)) / (N+L);
     packet = zeros(N+L,P);
 

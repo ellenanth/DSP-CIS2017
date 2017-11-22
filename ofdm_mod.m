@@ -45,11 +45,14 @@ function [ofdm_seq] = ofdm_mod(seq, N, N_q, L, ...
         packet(:,i_P) = ifft(packet(:,i_P));
     end
     
+    %TODO ifft op hele matrix
+    
     %expand the packet with a cyclic prefix of length L
     packet = [ packet((N-L+1):N, :) ; packet];
     
+    %parallel to serial conversion
+    %TODO gebruik functies uit matlab tutorial
     for i_P = 1:P
-        %parallel to serial conversion
         start_pos = (i_P-1)*(N+L) + 1;
         end_pos = start_pos + (N+L) - 1;
         ofdm_seq(1, start_pos:end_pos) = packet(:,i_P)';

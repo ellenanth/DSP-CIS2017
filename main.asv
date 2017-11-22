@@ -37,7 +37,7 @@ N_frame = fs;  %length of each frame in a packet
 if bit_loading_on
     %define the used carriers correctly based on the freq_resp of the
     %channel
-    % TODO gebruik 50% beste carriers
+    % TODO 
     frequency_response = fft(impulse_response, fs);
     mean = mean(abs(frequency_response(1:(fs/2),1)));
     used_carriers = [];
