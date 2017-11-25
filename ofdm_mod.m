@@ -40,12 +40,10 @@ function [ofdm_seq] = ofdm_mod(seq, N, N_q, L, ...
             packet(used_carriers(i_data)+1, i_P) = QAM_seq(start_QAM + i_data);
             packet(N-used_carriers(i_data)+1, i_P) = conj( QAM_seq(start_QAM + i_data) );
         end
-        
-        %IFFT per frame
-        packet(:,i_P) = ifft(packet(:,i_P));
     end
     
-    %TODO ifft op hele matrix
+    %ifft op hele matrix
+    packet = ifft(packet);
     
     %expand the packet with a cyclic prefix of length L
     packet = [ packet((N-L+1):N, :) ; packet];

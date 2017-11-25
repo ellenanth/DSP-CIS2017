@@ -3,22 +3,64 @@
 
 N = 512;
 N_q = 6;
-L_seq = N_q/2*N-N_q;
-L_seq_100 = L_seq*100;
-seq = randi([0,1], 1, L_seq);
-qam_seq = qam_mod(seq, N_q);
+L_Tx = 100; % L_Tx * N = #frames in ofdm-packet containing trainblock
 
 %impulse response
 IRest = matfile('IRest.mat');
-impulse_response = IRest.h;
+h = IRest.h;
 
-%% calculations
-seq_100 = zeros(1, 100*N);
-for i = 1:100
+%% generate trainblock
+L_seq = N_q*(N/2-1);
+L_tb = N/2-1;
+seq = randi([0,1], 1, L_seq);
+trainblock = qam_mod(seq, N_q);
+
+%% transmit ofdm-packet with L_Tx trainblocks
+seq_100 = zeros(1, L_Tx*N);
+for i = 1:L_Tx
     start_bit = (i-1)*L_seq+1;
     end_bit = start_bit + L_seq - 1;
     seq_100(1, start_bit:end_bit) = seq;
 end
-Tx = ofdm_mod(seq_100,L_seq,N_q,L_seq/10);
-Rx = fftfilt(impulse_response, Tx);
-% trainblock = qam_mod(seq,N_q);
+Tx = ofdm_mod(seq_100,L_tb,N_q,L_tb/10);
+Rx = fftfilt(h, Tx);
+
+%% demodulate Rx and estimate frequency response H
+%[seq_demod, H_est] = ofdm_demod(Rx, N, N_q, L_tb/10, L_seq*L_Tx, [], trainblock);
+H_est = fft(h);
+
+%% plot expected result
+figure(1);
+
+subplot(211);
+plot(h);
+xlabel('samples');
+title('impulse response in time domain');
+
+y = abs(fft(h));
+y = circshift(y, length(y)/2);
+x = [(-2*pi) : (4*pi/length(y)) : (2*pi - 4*pi/length(y))];
+subplot(212);
+plot( x,y );
+xlabel('frequency');
+title('frequency response');
+
+%% plot estimation
+figure(2);
+
+y = abs(H_est);
+y = circshift(y, length(y)/2);
+x = [(-2*pi) : (4*pi/length(y)) : (2*pi - 4*pi/length(y))];
+subplot(212);
+plot( x,y );
+xlabel('frequency');
+title('frequency response');
+
+subplot(211);
+plot( ifft(H_est) );
+xlabel('samples');
+title('impulse response in time domain');
+
+%% calculate ber
+ber = ber(seq, seq_demod);
+disp ("BER equals " + ber);
