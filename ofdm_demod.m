@@ -38,6 +38,9 @@ function [seq_demod, H_est] = ofdm_demod(seq_mod, N, N_q, L, original_length, ..
     %per frequentie (rij) kijken hoe de abs van elke waarde verzwakt is tov
     % de abs van trainblock op die frequentie
     %je moet maar tot op N/2-1 kijken
+%     A = transpose(packet(2:(N/2), 1:P));
+%     b = transpose(trainblock);
+%     H_est = A\b;
     H_est = ones(N,1);
     
     %retrieve QAM sequence

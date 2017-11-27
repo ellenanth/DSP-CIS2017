@@ -27,10 +27,8 @@ function [ofdm_seq] = ofdm_mod(seq, N, N_q, L, ...
     
     % padding with zeros to fit data in packet
     nb_padding_qam = P*(nb_data) - length(QAM_seq);
-    if (nb_padding_qam ~= 0)
-        padding_seq = qam_mod(zeros(1, nb_padding_qam*N_q), N_q);
-        QAM_seq = [QAM_seq, padding_seq];
-    end
+    padding_seq = qam_mod(zeros(1, nb_padding_qam*N_q), N_q);
+    QAM_seq = [QAM_seq, padding_seq];
     
     %fill each frame in the packet
     packet = zeros(N, P);
