@@ -4,6 +4,7 @@
 N = 512;
 N_q = 6;
 L_Tx = 100; % L_Tx * N = #frames in ofdm-packet containing trainblock
+fs = 16000
 
 %impulse response
 IRest = matfile('IRest.mat');
@@ -23,11 +24,17 @@ for i = 1:L_Tx
     seq_100(1, start_bit:end_bit) = seq;
 end
 Tx = ofdm_mod(seq_100,N,N_q,ceil(L_tb/10));
-Rx = fftfilt(h, Tx);
+Tx = transpose(Tx);
+synchronization_pulse = [1 ; zeros(fs*2,1)];
+[simin, nbsecs, fs] = initparams(Tx, fs);
+sim('recplay');
+out = simout.signals.values;
+Rx = alignIO(out,synchronization_pulse);
+%Rx = fftfilt(h, Tx);
 
 %% demodulate Rx and estimate frequency response H
-[seq_demod, H_est] = ofdm_demod(Rx, N, N_q, ceil(L_tb/10), L_seq*L_Tx, [], trainblock);
-%H_est = fft(h);
+%[seq_demod, H_est] = ofdm_demod(Rx, N, N_q, ceil(L_tb/10), L_seq*L_Tx, [], trainblock);
+H_est = fft(h);
 
 %% plot expected result
 figure(1);
@@ -62,5 +69,6 @@ xlabel('samples');
 title('impulse response in time domain');
 
 %% calculate ber
-ber = ber(seq_100, seq_demod);
-disp ("BER equals " + ber);
+
+%ber = ber(seq_100, seq_demod);
+%disp ("BER equals " + ber);

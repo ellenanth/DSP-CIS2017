@@ -18,8 +18,8 @@ out = simout.signals.values;
 [Y,I] = max(abs(out));
 
 limit_value = 1/10 * Y;
-disp('limit value: ' + limit_value);
-disp('max value: ' + Y + ', at ' + I);
+disp("limit value: " + limit_value);
+disp("max value: " + Y + ", at " + I);
 
 %start looking for the start of the impulse response 300 samples left from 
 %the maximum and scan to the right
@@ -28,7 +28,7 @@ while (out(i,1) < limit_value)
     i = i + 1;
 end
 sample_start = i;
-disp('start: ' + i);
+disp("start: " + i);
 
 %start looking for the end of the impulse response 500 samples right from 
 %the maximum and scan to the left
@@ -37,7 +37,7 @@ while out(j,1) < limit_value
     j = j - 1;
 end
 sample_end = j;
-disp('end: ' + j);
+disp("end: " + j);
 
 %% results
 %IR1
