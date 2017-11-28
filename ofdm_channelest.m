@@ -4,7 +4,7 @@
 N = 512;
 N_q = 6;
 L_Tx = 100; % L_Tx * N = #frames in ofdm-packet containing trainblock
-fs = 16000
+fs = 16000;
 
 %impulse response
 IRest = matfile('IRest.mat');
