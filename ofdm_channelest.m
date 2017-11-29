@@ -23,18 +23,19 @@ for i = 1:L_Tx
     end_bit = start_bit + L_seq - 1;
     seq_100(1, start_bit:end_bit) = seq;
 end
-Tx = ofdm_mod(seq_100,N,N_q,ceil(L_tb/10));
+Tx = ofdm_mod(seq_100,N,N_q,ceil(N/2));
 Tx = transpose(Tx);
 synchronization_pulse = [1 ; zeros(fs*2,1)];
 [simin, nbsecs, fs] = initparams(Tx, fs);
 sim('recplay');
 out = simout.signals.values;
 Rx = alignIO(out,synchronization_pulse);
+Rx = transpose(Rx);
 %Rx = fftfilt(h, Tx);
 
 %% demodulate Rx and estimate frequency response H
-%[seq_demod, H_est] = ofdm_demod(Rx, N, N_q, ceil(L_tb/10), L_seq*L_Tx, [], trainblock);
-H_est = fft(h);
+[seq_demod, H_est] = ofdm_demod(Rx, N, N_q, ceil(N/2), L_seq*L_Tx, [], trainblock);
+% H_est = fft(h);
 
 %% plot expected result
 figure(1);
@@ -45,10 +46,10 @@ xlabel('samples');
 title('impulse response in time domain');
 
 y = abs(fft(h));
-y = circshift(y, length(y)/2);
-x = [(-pi) : (2*pi/length(y)) : (pi - 2*pi/length(y))];
+%y = circshift(y, length(y)/2);
+%x = [(-pi) : (2*pi/length(y)) : (pi - 2*pi/length(y))];
 subplot(212);
-plot( x,y );
+plot( y );
 xlabel('frequency');
 title('frequency response');
 
@@ -56,10 +57,10 @@ title('frequency response');
 figure(2);
 
 y = abs(H_est);
-y = circshift(y, length(y)/2);
-x = [(-pi) : (2*pi/length(y)) : (pi - 2*pi/length(y))];
+% y = circshift(y, length(y)/2);
+% x = [(-pi) : (2*pi/length(y)) : (pi - 2*pi/length(y))];
 subplot(212);
-plot( x,y );
+plot( y );
 xlabel('frequency');
 title('frequency response');
 
@@ -70,5 +71,5 @@ title('impulse response in time domain');
 
 %% calculate ber
 
-%ber = ber(seq_100, seq_demod);
-%disp ("BER equals " + ber);
+ber = ber(seq_100, seq_demod);
+disp ("BER equals " + ber);

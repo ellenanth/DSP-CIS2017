@@ -18,7 +18,6 @@ function [seq_demod, H_est] = ofdm_demod(seq_mod, N, N_q, L, original_length, ..
     %serial-to-parallel conversion
     %TODO gebruik functies van matlab tutorial
     P = (length(seq_mod)) / (N+L);
-    disp(P);
     packet = zeros(N+L,P);
 
     for i_P = 1:P
@@ -34,14 +33,20 @@ function [seq_demod, H_est] = ofdm_demod(seq_mod, N, N_q, L, original_length, ..
     %fft op hele matrix
     packet = fft(packet);
     
-    %estimate channel frequency response based on trainblock and
+    %TODO estimate channel frequency response based on trainblock and
+    %seq_mod
+    %per frequentie (rij) kijken hoe de abs van elke waarde verzwakt is tov
+    % de abs van trainblock op die frequentie
+    %je moet maar tot op N/2-1 kijken
+%     A = transpose(packet(2:(N/2), 1:P));
+%     b = transpose(trainblock);
+%     H_est = A\b;
     H_est = zeros(N/2-1, 1);
     for i = 1:(N/2-1)
         b = transpose(packet(i+1,:));
         A = ones(P, 1) .* trainblock(1,i);
         H_est(i,1) = A\b;
     end
-    H_est = [0;H_est;0;flipud(conj(H_est))];
 
     %retrieve QAM sequence
     nb_data = length(used_carriers);
@@ -49,8 +54,6 @@ function [seq_demod, H_est] = ofdm_demod(seq_mod, N, N_q, L, original_length, ..
     for i_P = 1:P
         % scale components with the inverse of the channel frequency
         % response
-%         packet(2:N/2,i_P) = packet(2:N/2,i_P) ./ H_est;
-%         packet(N/2+2:N, i_P) = packet(N/2+2:N, i_P) ./ flipud(H_est);
         packet(:,i_P) = packet(:,i_P) ./ H_est;
         
         % only retrieve values from used carriers

@@ -14,6 +14,8 @@ function [simin,nbsecs,fs] = initparams(toplay,fs)
     % 1 second of silence at the end
     % After synchronization pulse 2 seconds of 'silence'. Can be addepted
     % in function of the impulse respponse
+    
+    %TODO synchronization pulse 1s sine wave ipv puls
     synchronization_pulse = [1, 1; zeros(fs*2,2)];
     simin = [ zeros(fs*2,2) ; synchronization_pulse ; toplay,toplay ; zeros(fs,2) ];
     nbsecs = size(simin,1)/fs;
