@@ -34,6 +34,7 @@ out = simout.signals.values;
 % out = fftfilt(h,Tx);
 
 %% reconstruct sent signal
+%TODO 1 frame marge nemen op Tx
 Rx = alignIO(out, sync_pulse, length(Tx));
 Rx = transpose(Rx);
 % Rx = out;

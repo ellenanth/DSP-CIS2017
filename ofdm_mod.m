@@ -9,7 +9,7 @@
 %Lt = number of training frames
 %Ld = number of data frames
 function [ofdm_seq] = ofdm_mod(seq, N, N_q, L, ...
-    used_carriers, training_packet, Lt, Ld)    
+    used_carriers, training_frame, Lt, Ld)    
 
     %check if N is even
     if mod(N,2) ~= 0
@@ -26,11 +26,12 @@ function [ofdm_seq] = ofdm_mod(seq, N, N_q, L, ...
     QAM_seq = qam_mod(seq, N_q);
         
     
-    % define P as number of (total) frames in a packet
-    P = ceil(length(QAM_seq)/(nb_data));
-    
-    number = ceil(P/Ld);
-    P_extended = Ld*number;
+    % define P as number of (total) data frames in a packet
+    % define P_extended as the total data frame packets to fill all
+    % subpackets
+    P = ceil(length(QAM_seq)/(nb_data));  
+    nb_subpackets = ceil(P/Ld);
+    P_extended = Ld*nb_subpackets;
     
     % padding with zeros to fit data in packet
     nb_padding_qam = P_extended*(nb_data) - length(QAM_seq);
@@ -39,12 +40,13 @@ function [ofdm_seq] = ofdm_mod(seq, N, N_q, L, ...
         QAM_seq = [QAM_seq, padding_seq];
     end
     
-    
-   training_packet_matrix = repmat(transpose(training_packet),Lt);
+    %make a training subpacket of width Lt
+    training_frame = [0, training_frame, 0, conj(fliplr(training_frame))];
+    training_subpacket = repmat(transpose(training_frame),1,Lt);
    
     %fill each frame in the packet
     packet = zeros(N, P_extended);
-    for i_P = 1:P    
+    for i_P = 1:P_extended    
         %fill in QAM signals while keeping zeros on DC and Nyquist
         %frequencies, also keep zeros on non-used carrier frequencies
         start_QAM = (i_P-1) * nb_data;
@@ -54,14 +56,29 @@ function [ofdm_seq] = ofdm_mod(seq, N, N_q, L, ...
         end
     end
     
+    % put training subpackets in between data subpackets
+%     for i_SP = 1:(nb_data_subpackets-1)
+%         start = Ld*i_SP + Lt*(i_SP-1);
+%         stop = start + 1 ;
+%         packet = [packet(:,1:start) training_subpacket packet(:,stop:length(packet(1,:)))];
+%     end
+%     %add training_packet_matrix in front of the matrix
+%     packet = [training_subpacket packet(:,:)];
 
-    for i_P = 1:(number-1)
-        start = Ld*i_P + Lt*(i_P-1);
-        stop = start + 1 ;
-        packet = [packet(:,1:start) training_packet_matrix packet(:,stop:length(packet(1,:)))];
+    P_full = nb_subpackets * (Ld+Lt);
+    packet_full = zeros(N, P_full);
+    for i_SP = 1:nb_subpackets
+        start_pos_tb = (i_SP-1)*(Ld+Lt) + 1;
+        end_pos_tb = start_pos_tb + Lt - 1;
+        start_pos_d = end_pos_tb + 1;
+        end_pos_d = start_pos_d + Ld - 1;
+        start_pos_packet = (i_SP-1) * Ld + 1;
+        end_pos_packet = start_pos_packet + Ld - 1;
+        
+        packet_full(:,start_pos_tb:end_pos_tb) = training_subpacket;
+        packet_full(:,start_pos_d:end_pos_d) = ...
+                            packet(:,start_pos_packet:end_pos_packet);
     end
-    %add training_packet_matrix in front of the matrix
-    packet = [training_packet_matrix packet(:,:)];
         
     
     %ifft op hele matrix
@@ -72,7 +89,7 @@ function [ofdm_seq] = ofdm_mod(seq, N, N_q, L, ...
     
     %parallel to serial conversion
     %TODO gebruik functies uit matlab tutorial
-    for i_P = 1:P
+    for i_P = 1:P_full
         start_pos = (i_P-1)*(N+L) + 1;
         end_pos = start_pos + (N+L) - 1;
         ofdm_seq(1, start_pos:end_pos) = packet(:,i_P)';

@@ -4,6 +4,11 @@
 %simin contains 2s (=fs*2) of silence at beginning and 1s at the end and
 %the given toplay vector in between
 function [simin,nbsecs,fs, sync_pulse] = initparams(toplay,fs)
+    %
+    if size(toplay,1)<size(toplay,2)
+        toplay = transpose(toplay);
+    end
+    
     %make sure the values of toplay are in the interval [-1,1] to avoid
     %clipping (scale each value with the maximum absolute value)
     toplay = toplay/max(max(abs(toplay)));
