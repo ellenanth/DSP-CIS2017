@@ -15,10 +15,14 @@ function [seq_demod, H_est] = ofdm_demod(seq_mod, N, N_q, L, original_length, ..
         used_carriers = [1:(N/2-1)];
     end    
     
+    %if seq_mod is a column vector, transpose to a row vector
+    if size(seq_mod,1)>size(seq_mod,2)
+        seq_mod = transpose(seq_mod);
+    end
+    
     %serial-to-parallel conversion
     %TODO gebruik functies van matlab tutorial
     P = (length(seq_mod)) / (N+L);
-    disp(P);
     packet = zeros(N+L,P);
 
     for i_P = 1:P

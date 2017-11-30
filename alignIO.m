@@ -1,13 +1,18 @@
-function [out_aligned] = alignIO(out,pulse)
+function [out_aligned] = alignIO(out, pulse, L_signal)
 
-%compute cross-correlation between vectors s1 and s2
-X1=xcorr(out,pulse);
+%compute cross-correlation between vectors out and pulse
+[X1, lag]=xcorr(out,pulse);
+
 %find index of maximum value of cross-correlation amplitude
-[~,d]=max(X1);      
+[~,I] = max(abs(X1));
+lagDiff = lag(I);
 
-%shift index d, as length(X1)=2*N-1; where N is the length of the signals
-delay=d-max(length(out),length(pulse));
+%align output
+out_aligned = out(lagDiff+1:end);
 
-%TODO fs en wachtlengtes meegeven in functie
-out_aligned = [out(delay-20+16000*2:length(out)-1*16000,1) ; zeros(delay-20,1)];
+%cut off samples that don't belong to the signal
+out_start = 2.5*16000 - 20; %0.5s sync_pulse + 2s silence and 20 samples margin
+%out_end = length(out_aligned)-1*16000; %1s silence
+out_end = out_start+L_signal-1;
+out_aligned = out_aligned(out_start:out_end);
 end

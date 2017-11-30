@@ -1,9 +1,7 @@
 % Exercise session 5: channel estimaition and equalization
-clear
 %% variables
 N = 512;
-CP = 150;
-N_q = 4;
+N_q = 6;
 nb_tbs = 100; %number of trainblocks transmitted
 fs = 16000;
 
@@ -24,22 +22,22 @@ for i = 1:nb_tbs
     end_bit = start_bit + L_seq - 1;
     seq_100(1, start_bit:end_bit) = seq;
 end
-Tx = ofdm_mod(seq_100, N, N_q, CP);
+Tx = ofdm_mod(seq_100,N,N_q,ceil(N/2));
 Tx = transpose(Tx);
 
 %% send Tx over channel
-[simin, nbsecs, fs, sync_pulse] = initparams(Tx, fs);
-sim('recplay');
-out = simout.signals.values;
-% out = fftfilt(h,Tx);
+% [simin, nbsecs, fs, sync_pulse] = initparams(Tx, fs);
+% sim('recplay');
+% out = simout.signals.values;
+out = fftfilt(h,Tx);
 
 %% reconstruct sent signal
-Rx = alignIO(out, sync_pulse, length(Tx));
-Rx = transpose(Rx);
-% Rx = out;
+% Rx = alignIO(out, sync_pulse, length(Tx));
+% Rx = transpose(Rx);
+Rx = out;
 
 %% demodulate Rx and estimate frequency response H
-[seq_demod, H_est] = ofdm_demod(Rx, N, N_q, CP, L_seq*nb_tbs, [], trainblock);
+[seq_demod, H_est] = ofdm_demod(Rx, N, N_q, ceil(N/2), L_seq*nb_tbs, [], trainblock);
 
 %% plot expected result
 figure(1);
