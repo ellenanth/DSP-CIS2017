@@ -42,6 +42,7 @@ function [ofdm_seq] = ofdm_mod(seq, N, N_q, L, ...
     
    training_packet_matrix = repmat(transpose(training_packet),Lt);
    
+        
     %fill each frame in the packet
     packet = zeros(N, P_extended);
     for i_P = 1:P    
@@ -58,10 +59,11 @@ function [ofdm_seq] = ofdm_mod(seq, N, N_q, L, ...
     for i_P = 1:(number-1)
         start = Ld*i_P + Lt*(i_P-1);
         stop = start + 1 ;
-        packet = [packet(:,1:start) training_packet_matrix packet(:,stop:length(packet(1,:)))];
+        packet = [packet(:,1:start) training_packet_matrix packet(:,stop:length(packet))];
     end
     %add training_packet_matrix in front of the matrix
-    packet = [training_packet_matrix packet(:,:)];
+    packet = [training_packet_matrix packet[:]];
+        
         
     
     %ifft op hele matrix
