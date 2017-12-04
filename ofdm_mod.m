@@ -5,9 +5,10 @@
 %N_q: 2^N_q is the constellation size for the QAM modulation, max. 6
 %L = length of cyclic prefix, should be way smaller than N
 %used carriers = row vector with indices of the used carrier frequencies
-%training packet used to estimate channel frequency response
-%Lt = number of training frames
-%Ld = number of data frames
+%training frame = QAM sequence of length N/2-1 used in each frame of 
+%                                                   a training subpacket 
+%Lt = number of training frames per training subpacket
+%Ld = number of data frames per data subpacket
 function [ofdm_seq] = ofdm_mod(seq, N, N_q, L, ...
     used_carriers, training_frame, Lt, Ld)    
 
@@ -17,7 +18,7 @@ function [ofdm_seq] = ofdm_mod(seq, N, N_q, L, ...
     end
 
     %the number of data bits in one frame
-    if ~exist('used_carriers', 'var')
+    if ~exist('used_carriers', 'var') || isempty(used_carriers)
         used_carriers = [1:(N/2-1)];
     end
     nb_data = length(used_carriers);
@@ -82,16 +83,17 @@ function [ofdm_seq] = ofdm_mod(seq, N, N_q, L, ...
         
     
     %ifft op hele matrix
-    packet = ifft(packet);
+    packet_full = ifft(packet_full);
     
     %expand the packet with a cyclic prefix of length L
-    packet = [ packet((N-L+1):N, :) ; packet];
+    packet_full = [ packet_full((N-L+1):N, :) ; packet_full];
     
     %parallel to serial conversion
     %TODO gebruik functies uit matlab tutorial
+    ofdm_seq = zeros(1,(N+L)*P_full);
     for i_P = 1:P_full
         start_pos = (i_P-1)*(N+L) + 1;
         end_pos = start_pos + (N+L) - 1;
-        ofdm_seq(1, start_pos:end_pos) = packet(:,i_P)';
+        ofdm_seq(1, start_pos:end_pos) = packet_full(:,i_P)';
     end
 end

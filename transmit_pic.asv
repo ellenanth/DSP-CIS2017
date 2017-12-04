@@ -36,5 +36,4 @@ Rx = transpose(Rx);
                                             [], trainblock, Lt, Ld);
                                         
 %% calculate BER
-BER_calc = ber(bitStream', seq_demod);
-disp("BER is " + BER_calc);
+
