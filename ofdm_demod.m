@@ -10,7 +10,10 @@
 %Lt = number of frames in training subpackets
 %Ld = number of frames in data subpackets
 function [seq_demod, channel_est_mtx] = ofdm_demod(seq_mod, N, N_q, L, original_length, ...
-                            used_carriers, trainblock, Lt, Ld)    
+                            used_carriers, trainblock, Lt, Ld, nbsecs)
+    if ~exist('nbsecs', 'var') || isempty(nbsecs)
+    nbsecs = 10;
+    end   
     %default value for used_carriers
     if ~exist('used_carriers', 'var') || isempty(used_carriers)
         used_carriers = [1:(N/2-1)];
@@ -101,7 +104,7 @@ function [seq_demod, channel_est_mtx] = ofdm_demod(seq_mod, N, N_q, L, original_
         % maar de juiste delta_s moet nog ingevuld worden
 %         f = ? ; %frames per second
 %         delta_s = (Lt+Ld)/f;
-        delta_s = 0.5;
+        delta_s = nbsecs/nb_subpackets;
         s = delta_s * i_SP;
         visualize_demod(seq_demod, channel_est_mtx(:,i_SP), ...
                                            used_carriers,s, delta_s);        

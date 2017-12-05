@@ -17,7 +17,6 @@ function [simin,nbsecs,fs, sync_pulse] = initparams(toplay,fs)
     t = [0:1/fs:(0.5-1/fs)];
     t = t';
     sync_pulse = sin(2*pi*400*t);
-    
     %create output
     simin = [ zeros(fs*2,2) ;           %2sec silence at start
               sync_pulse, sync_pulse ;  %sync_pulse
