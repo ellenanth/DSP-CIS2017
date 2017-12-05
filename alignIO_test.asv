@@ -43,7 +43,6 @@ plot(Rx);
 title('reconstructed signal');
 
 %% BER
-% dit is gewoon om eens te testen, niet zo logisch allemaal
 ber_align = abs(mean(ofdmStream - Rx));
 disp("mean of difference equals " + ber_align);
 figure(2)
