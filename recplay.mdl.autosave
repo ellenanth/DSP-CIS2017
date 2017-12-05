@@ -113,7 +113,7 @@ Model {
       "////wEAAAAA/////wAAAAAAAAAA/////wAAAAAA/////wAAAAAAAAAA/////wAAAAAA/////wAAAAAAAAAA/////wAAAAAA/////wAAAAAAAAAA/"
       "////wEAAAB5/////wAAAAAAAAAA/////wEAAADa/////wAAAAAAAAAA/////wAAAAAA/////wAAAAAAAAAA/////wEAAAFT/////wAAAAAAAAAA/"
       "////wAAAAAA/////wAAAAAAAAAA/////wAAAAAA/////wAAAAAAAAAA/////wAAAAAA/////wAAAAAAAAAA/////wEAAAL9/////wAAAAAAAAAA/"
-      "////wEAAAMs/////wAAAAAAAAAA/////wAAAAAA/////wAAAAAAAAAA"
+      "////wAAAAAA/////wAAAAAAAAAA/////wAAAAAA/////wAAAAAAAAAA"
     }
   }
   HideAutomaticNames	  on
@@ -124,7 +124,7 @@ Model {
   LastModifiedBy	  "Ellen"
   ModifiedDateFormat	  "%<Auto>"
   LastModifiedDate	  "Mon Oct 23 15:57:38 2017"
-  RTWModifiedTimeStamp	  434386581
+  RTWModifiedTimeStamp	  434413151
   ModelVersionFormat	  "1.%<AutoIncrement:22>"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -1699,7 +1699,7 @@ Model {
       SourceType	      "From Audio Device"
       SourceProductName	      "DSP System Toolbox"
       SourceProductBaseCode   "DS"
-      deviceName	      "Default"
+      deviceName	      "Microfoon (High Definition Audio-apparaat)"
       numChannels	      "1"
       sampleRate	      "fs"
       deviceDatatype	      "16-bit integer"
@@ -1745,7 +1745,7 @@ Model {
       SourceType	      "To Audio Device"
       SourceProductName	      "DSP System Toolbox"
       SourceProductBaseCode   "DS"
-      deviceName	      "Luidsprekers (Conexant SmartAudio HD)"
+      deviceName	      "DELL U2715H (Intel(R) Display Audio)"
       inheritSampleRate	      on
       sampleRate	      "44100"
       deviceDatatype	      "Determine from input data type"

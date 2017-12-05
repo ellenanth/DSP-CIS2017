@@ -6,11 +6,11 @@ N_q = 6;
 Lt = 20;
 Ld = 30;
 L = ceil(N/2);
-BWusage = 70;
+%BWusage = 70;
 
 %% settings
-OOK_on = false;
-simulation = true;
+%OOK_on = true;
+simulation = false;
 
 %% generate trainblock
 L_tb = N/2-1;
@@ -51,7 +51,10 @@ end
 ofdmStream = ofdm_mod(bitStream', N, N_q, L, ...
                             used_carriers, trainblock, Lt, Ld)  ;
 if simulation
-    Rx = transpose(ofdmStream);
+    [simin, nbsecs, fs, sync_pulse] = initparams(ofdmStream, fs);
+    test = simin(:,1);
+    Rx = alignIO(test, sync_pulse, length(ofdmStream));
+    %Rx = transpose(ofdmStream);
 else
     % send ofdmStream over channel
     [simin, nbsecs, fs, sync_pulse] = initparams(ofdmStream, fs);
@@ -62,9 +65,9 @@ else
     Rx = transpose(Rx);
 end
 %% demodulate OFDM stream to bitstream
-%nbsecs = nbsecs - 0.5 - 2 - 2 - 1 ;
+nbsecs = nbsecs - 0.5 - 2 - 2 - 1 ;
 [seq_demod, channel_est] = ofdm_demod(Rx, N, N_q, L, length(bitStream), ...
-                                   used_carriers, trainblock, Lt, Ld, []);
+                                   used_carriers, trainblock, Lt, Ld, nbsecs);
                                         
 %% calculate BER
 BER_calc = ber(bitStream', seq_demod);

@@ -5,6 +5,7 @@ function [] = visualize_demod(seq_demod, frequency_response, used_carriers, s, d
     %TODO keep axes fixed
     subplot(2,2,1);
     plot(ifft(frequency_response));
+    axis([0 600 -0.02 0.02])
     title("Channel in time domain");
 
     %transmitted image
@@ -25,6 +26,7 @@ function [] = visualize_demod(seq_demod, frequency_response, used_carriers, s, d
         end
     end
     plot(abs( frequency_response(2:(N/2),1) ));
+    axis([0 300 0 0.4])
     title("Channel in frequency domain");
 
     %received image
