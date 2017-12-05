@@ -1,7 +1,8 @@
-function [] = visualize_demod(seq_demod, frequency_response, seconds, seconds_update)
+function [] = visualize_demod(seq_demod, frequency_response, used_carriers, s, delta_s)
     figure(1)
     
     %estimated time_domain channel impulse response
+    %TODO keep axes fixed
     subplot(2,2,1);
     plot(ifft(frequency_response));
     title("Channel in time domain");
@@ -15,15 +16,22 @@ function [] = visualize_demod(seq_demod, frequency_response, seconds, seconds_up
     title('Transmitted image'); drawnow;
 
     %estimated channel frequency response
+    %TODO keep axes fixed
     subplot(2,2,3);
-    plot(abs(frequency_response));
+    N = length(frequency_response);
+    for i = 1:(N/2-1)
+        if ~ismember(i,used_carriers)
+            frequency_response(i+1,1) = 0;
+        end
+    end
+    plot(abs( frequency_response(2:(N/2),1) ));
     title("Channel in frequency domain");
 
     %received image
     subplot(2,2,4);
     image_received = bitstreamtoimage(seq_demod', imageSize, bitsPerPixel);
     colormap(colorMap); image(image_received); axis image; 
-    title("Received image after " + seconds + " seconds"); drawnow;
+    title("Received image after " + s + " seconds"); drawnow;
     
-    pause(seconds_update);
+    pause(delta_s);
 end

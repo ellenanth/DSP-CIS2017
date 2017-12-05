@@ -97,12 +97,14 @@ function [seq_demod, channel_est_mtx] = ofdm_demod(seq_mod, N, N_q, L, original_
         %save demodulated QAM sequence of the subpacket
         seq_demod(1, start_pos:end_pos) = seq_demod_subpacket;
         
-%         f = 16000; %frames per second
-%         seconds = (Lt+Ld)/f * i_SP;
-        seconds = 0.5 * i_SP;
-        seconds_update = 0.5;
+        %TODO ik heb hier een delta_s van 0.5 genomen om te testen,
+        % maar de juiste delta_s moet nog ingevuld worden
+%         f = ? ; %frames per second
+%         delta_s = (Lt+Ld)/f;
+        delta_s = 0.5;
+        s = delta_s * i_SP;
         visualize_demod(seq_demod, channel_est_mtx(:,i_SP), ...
-                                                seconds, seconds_update);        
+                                           used_carriers,s, delta_s);        
     end
 
     % remove padded zeros
