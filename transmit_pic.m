@@ -9,8 +9,8 @@ L = ceil(N/2);
 BWusage = 70;
 
 %% settings
-OOK_on = false;
-simulation = true;
+OOK_on = true;
+simulation = false;
 
 %% generate trainblock
 L_tb = N/2-1;
