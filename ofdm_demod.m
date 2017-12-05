@@ -12,7 +12,7 @@
 function [seq_demod, channel_est_mtx] = ofdm_demod(seq_mod, N, N_q, L, original_length, ...
                             used_carriers, trainblock, Lt, Ld, nbsecs)
     if ~exist('nbsecs', 'var') || isempty(nbsecs)
-    nbsecs = 10;
+    nbsecs = 5;
     end   
     %default value for used_carriers
     if ~exist('used_carriers', 'var') || isempty(used_carriers)

@@ -9,8 +9,8 @@ L = ceil(N/2);
 BWusage = 70;
 
 %% settings
-OOK_on = true;
-simulation = false;
+OOK_on = false;
+simulation = true;
 
 %% generate trainblock
 L_tb = N/2-1;
@@ -62,9 +62,9 @@ else
     Rx = transpose(Rx);
 end
 %% demodulate OFDM stream to bitstream
-nbsecs = nbsecs - 0.5 - 2 - 2 - 1 ;
+%nbsecs = nbsecs - 0.5 - 2 - 2 - 1 ;
 [seq_demod, channel_est] = ofdm_demod(Rx, N, N_q, L, length(bitStream), ...
-                                            used_carriers, trainblock, Lt, Ld, nbsecs);
+                                   used_carriers, trainblock, Lt, Ld, []);
                                         
 %% calculate BER
 BER_calc = ber(bitStream', seq_demod);

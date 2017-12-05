@@ -1,12 +1,19 @@
+%% variables
+fs = 16000;
+N = 512;
+N_q = 6;
+Lt = 5;
+Ld = 7;
+L = ceil(N/2);
 
 %% create transmitted signal
-fs = 16000; N_q = 6;
-seq = randi([0,1], 1, fs*1);
-Tx = ofdm_mod(seq,50,N_q,25);
-Tx = transpose(Tx);
-L_signal = length(Tx);
-[simin, nbsecs, fs, sync_pulse] = initparams(Tx, fs);
-
+[bitStream, imageData, colorMap, imageSize, bitsPerPixel] = ...
+                            imagetobitstream('image.bmp');
+ofdmStream = ofdm_mod(bitStream', N, N_q, L, ...
+                            used_carriers, trainblock, Lt, Ld)  ;
+L_signal = length(ofdmStream);                        
+[simin, nbsecs, fs, sync_pulse] = initparams(ofdmStream, fs);
+                        
 subplot(311);
 plot(simin(:,1));
 title('sent signal');
@@ -28,3 +35,9 @@ Rx = transpose(Rx);
 subplot(313);
 plot(Rx);
 title('reconstructed signal');
+
+%% BER
+%TODO dit geeft nog erros om één of andere louche reden, maar ik had efkes
+% geen tijd meer om uit te zoeken waarom
+% ber_align = ber(bitStream', Rx);
+% disp("BER equals " + ber_align);
