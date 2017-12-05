@@ -4,7 +4,7 @@ fs = 16000;
 N = 512;
 N_q = 6;
 Lt = 7;
-Ld = 25;
+Ld = 15;
 L = ceil(N/2);
 
 %% generate trainblock

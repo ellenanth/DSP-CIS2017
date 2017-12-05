@@ -44,6 +44,7 @@ function [seq_demod, channel_est_mtx] = ofdm_demod(seq_mod, N, N_q, L, original_
     
     %define nb_subpackets
     nb_subpackets = P / (Lt + Ld);
+    disp("number of subpackets is " + nb_subpackets);
     
     channel_est_mtx = zeros(N, nb_subpackets);
     seq_demod = zeros(1, nb_data*Ld*nb_subpackets*N_q);
@@ -74,7 +75,7 @@ function [seq_demod, channel_est_mtx] = ofdm_demod(seq_mod, N, N_q, L, original_
             packet(:,i_P) = packet(:,i_P) ./ channel_est_mtx(:,i_SP);
 
             % only retrieve values from used carriers
-            start_QAM = (i_P-1) * nb_data;
+            start_QAM = (i_P-start_pos_d) * nb_data;
             for i_data = 1:nb_data
                 QAM_seq_subpacket(1, start_QAM + i_data) = ...
                     packet( used_carriers(i_data)+1, i_P );
@@ -96,10 +97,12 @@ function [seq_demod, channel_est_mtx] = ofdm_demod(seq_mod, N, N_q, L, original_
         %save demodulated QAM sequence of the subpacket
         seq_demod(1, start_pos:end_pos) = seq_demod_subpacket;
         
-        
-        %visualize demod
-        %TODO
-        
+%         f = 16000; %frames per second
+%         seconds = (Lt+Ld)/f * i_SP;
+        seconds = 0.5 * i_SP;
+        seconds_update = 0.5;
+        visualize_demod(seq_demod, channel_est_mtx(:,i_SP), ...
+                                                seconds, seconds_update);        
     end
 
     % remove padded zeros

@@ -7,8 +7,8 @@
 %original_length of the sequence needed to cut of padded zeros at the end
 %used carriers = row vector with indices of the used carrier frequencies
 %trainblock = QAM sequence used in each frame of the training subpackets
-%Lt = 
-
+%Lt = number of frames in training subpackets
+%Ld = number of frames in data subpackets
 function [seq_demod, channel_est_mtx] = ofdm_demod(seq_mod, N, N_q, L, original_length, ...
                             used_carriers, trainblock, Lt, Ld)    
     %default value for used_carriers
@@ -44,6 +44,7 @@ function [seq_demod, channel_est_mtx] = ofdm_demod(seq_mod, N, N_q, L, original_
     
     %define nb_subpackets
     nb_subpackets = P / (Lt + Ld);
+    disp("number of subpackets is " + nb_subpackets);
     
     channel_est_mtx = zeros(N, nb_subpackets);
     seq_demod = zeros(1, nb_data*Ld*nb_subpackets*N_q);
@@ -71,10 +72,10 @@ function [seq_demod, channel_est_mtx] = ofdm_demod(seq_mod, N, N_q, L, original_
         for i_P = start_pos_d:end_pos_d
             % scale components with the inverse of the channel frequency
             % response
-            packet(:,i_P) = packet(:,i_P) ./ channel_est(:,i_SP);
+            packet(:,i_P) = packet(:,i_P) ./ channel_est_mtx(:,i_SP);
 
             % only retrieve values from used carriers
-            start_QAM = (i_P-1) * nb_data;
+            start_QAM = (i_P-start_pos_d) * nb_data + 1;
             for i_data = 1:nb_data
                 QAM_seq_subpacket(1, start_QAM + i_data) = ...
                     packet( used_carriers(i_data)+1, i_P );
@@ -86,20 +87,22 @@ function [seq_demod, channel_est_mtx] = ofdm_demod(seq_mod, N, N_q, L, original_
         if i_SP == nb_subpackets
             seq_demod_subpacket = ...
                      qam_demod(QAM_seq_subpacket, N_q, remaining_length);
-            end_pos = start_pos + remaining_length;
+            end_pos = start_pos + remaining_length - 1;
         else
             seq_demod_subpacket = ...
                      qam_demod(QAM_seq_subpacket, N_q, nb_data*Ld*N_q); 
             remaining_length = remaining_length - nb_data*Ld*N_q;
-            end_pos = start_pos + nb_data*Ld*N_q;
+            end_pos = start_pos + nb_data*Ld*N_q - 1;
         end
         %save demodulated QAM sequence of the subpacket
         seq_demod(1, start_pos:end_pos) = seq_demod_subpacket;
         
-        
-        %visualize demod
-        %TODO
-        
+%         f = 16000; %frames per second
+%         seconds = (Lt+Ld)/f * i_SP;
+        seconds = 0.5 * i_SP;
+        seconds_update = 0.5;
+        visualize_demod(seq_demod, channel_est_mtx(:,i_SP), ...
+                                                seconds, seconds_update);        
     end
 
     % remove padded zeros
