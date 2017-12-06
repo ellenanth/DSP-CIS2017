@@ -2,7 +2,7 @@
 %% variables
 fs = 16000;
 N = 512;
-N_q = 4;
+N_q = 6;
 Lt = 20;
 Ld = 30;
 L = ceil(N/2);
