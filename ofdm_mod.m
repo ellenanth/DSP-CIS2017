@@ -11,7 +11,7 @@
 %Ld = number of data frames per data subpacket
 function [ofdm_seq] = ofdm_mod(seq, N, N_q, L, ...
     used_carriers, training_frame, Lt, Ld)    
-
+    
     %check if N is even
     if mod(N,2) ~= 0
         error("N must be even");
@@ -22,7 +22,7 @@ function [ofdm_seq] = ofdm_mod(seq, N, N_q, L, ...
         used_carriers = [1:(N/2-1)];
     end
     nb_data = length(used_carriers);
-
+    
     %QAM-modulation
     QAM_seq = qam_mod(seq, N_q);
         
@@ -30,7 +30,8 @@ function [ofdm_seq] = ofdm_mod(seq, N, N_q, L, ...
     % define P as number of (total) data frames in a packet
     % define P_extended as the total data frame packets to fill all
     % subpackets
-    P = ceil(length(QAM_seq)/(nb_data));  
+    P = ceil(length(QAM_seq)/(nb_data));
+    Ld = P; %update for last demo
     nb_subpackets = ceil(P/Ld);
     P_extended = Ld*nb_subpackets;
     

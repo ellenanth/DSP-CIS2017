@@ -10,7 +10,7 @@
 %Lt = number of frames in training subpackets
 %Ld = number of frames in data subpackets
 function [seq_demod, channel_est_mtx] = ofdm_demod(seq_mod, N, N_q, L, original_length, ...
-                            used_carriers, trainblock, Lt, Ld, nbsecs)
+                            used_carriers, trainblock, Lt, nbsecs)
     if ~exist('nbsecs', 'var') || isempty(nbsecs)
     nbsecs = 5;
     end   
@@ -28,13 +28,14 @@ function [seq_demod, channel_est_mtx] = ofdm_demod(seq_mod, N, N_q, L, original_
     %serial-to-parallel conversion
     %TODO gebruik functies van matlab tutorial
     P = (length(seq_mod)) / (N+L);
+    Ld = P - Lt;
     packet = zeros(N+L,P);
 
-    for i_P = 1:P
+    for i_frame = 1:P
         %fill frames in packet
-        start_pos = (i_P-1)*(N+L) + 1;
+        start_pos = (i_frame-1)*(N+L) + 1;
         end_pos = start_pos + (N+L) - 1;
-        packet(:,i_P) = seq_mod(1, start_pos:end_pos)';
+        packet(:,i_frame) = seq_mod(1, start_pos:end_pos)';
     end
     
     %cut off cyclic prefix
@@ -45,71 +46,57 @@ function [seq_demod, channel_est_mtx] = ofdm_demod(seq_mod, N, N_q, L, original_
     %fft op hele matrix
     packet = fft(packet);
     
-    %define nb_subpackets
-    nb_subpackets = P / (Lt + Ld);
-    disp("number of subpackets is " + nb_subpackets);
+    % initializing
+    channel_est_mtx = zeros(N, Ld);
+    seq_demod = zeros(1, nb_data*Ld*N_q);
     
-    channel_est_mtx = zeros(N, nb_subpackets);
-    seq_demod = zeros(1, nb_data*Ld*nb_subpackets*N_q);
-    remaining_length = original_length;
-    for i_SP = 1:nb_subpackets
-    
-        %estimate channel frequency response based on trainblock
-        channel_est = zeros(N/2-1, 1);
-        start_pos_tb = (i_SP-1)*(Lt+Ld) + 1;
-        end_pos_tb = start_pos_tb + Lt - 1;
-        start_pos_d = end_pos_tb + 1;
-        end_pos_d = start_pos_d + Ld - 1;
-        
-        for i = 1:(N/2-1)
-            b = transpose(packet(i+1,start_pos_tb:end_pos_tb));
-            A = ones(Lt, 1) .* trainblock(1,i);
-            channel_est(i,1) = A\b;
-        end
-        
-        %load estimation in channel_est matrix
-        channel_est_mtx(:,i_SP) = [0;channel_est;0;flipud(conj(channel_est))];
-
-        %retrieve QAM sequence from subpacket
-        QAM_seq_subpacket = zeros(1, nb_data*Ld);
-        for i_P = start_pos_d:end_pos_d
-            % scale components with the inverse of the channel frequency
-            % response
-            packet(:,i_P) = packet(:,i_P) ./ channel_est_mtx(:,i_SP);
-
-            % only retrieve values from used carriers
-            start_QAM = (i_P-start_pos_d) * nb_data;
-            for i_data = 1:nb_data
-                QAM_seq_subpacket(1, start_QAM + i_data) = ...
-                    packet( used_carriers(i_data)+1, i_P );
-            end
-        end
-        
-        % demodulate QAM sequence from subpacket
-        start_pos = (i_SP-1) * nb_data*Ld*N_q + 1;
-        if i_SP == nb_subpackets
-            seq_demod_subpacket = ...
-                     qam_demod(QAM_seq_subpacket, N_q, remaining_length);
-            end_pos = start_pos + remaining_length - 1;
-        else
-            seq_demod_subpacket = ...
-                     qam_demod(QAM_seq_subpacket, N_q, nb_data*Ld*N_q); 
-            remaining_length = remaining_length - nb_data*Ld*N_q;
-            end_pos = start_pos + nb_data*Ld*N_q - 1;
-        end
-        %save demodulated QAM sequence of the subpacket
-        seq_demod(1, start_pos:end_pos) = seq_demod_subpacket;
-        
-        %TODO ik heb hier een delta_s van 0.5 genomen om te testen,
-        % maar de juiste delta_s moet nog ingevuld worden
-%         f = ? ; %frames per second
-%         delta_s = (Lt+Ld)/f;
-        delta_s = nbsecs/nb_subpackets;
-        s = delta_s * i_SP;
-        visualize_demod(seq_demod, channel_est_mtx(:,i_SP), ...
-                                           used_carriers,s, delta_s);        
+    % estimate channel frequency response based on trainblock
+    channel_est = zeros(N/2-1, 1);
+    for i = 1:(N/2-1)
+        b = transpose(packet(i+1,1:Lt));
+        A = ones(Lt, 1) .* trainblock(1,i);
+        channel_est(i,1) = A\b;
     end
+        
+    % load estimation in channel_est matrix as initial value
+    % TODO load W instead of H
+    channel_est_mtx(:,1) = [0;channel_est;0;flipud(conj(channel_est))];
 
+    %process data packet per frame
+    QAM_seq = zeros(1, nb_data);
+    start_bit = 1;
+    for i_frame = (Lt+1):(Lt+Ld)
+        if i_frame ~= Lt+1
+            %TODO adaptive filter
+            %store result in channel_est_mtx(:,i_P-Lt)
+        end
+
+        % scale components with the inverse of the channel frequency
+        % response
+        % TODO maal W
+        packet(:,i_frame) = packet(:,i_frame) ./ channel_est_mtx(:,i_frame-Lt);
+
+        % only retrieve values from used carriers
+        start_QAM = (i_frame-Lt-1) * nb_data;
+        for i_data = 1:nb_data
+            QAM_seq(1, start_QAM + i_data) = ...
+                packet( used_carriers(i_data)+1, i_frame );
+        end
+
+        %qam_demod per frame
+        frame_bitstream = qam_demod(QAM_seq, N_q, nb_data*N_q);
+        end_bit = start_bit + nb_data*N_q - 1;
+        seq_demod(1, start_bit:end_bit) = frame_bitstream;
+        start_bit = end_bit + 1;
+        
+        %visualize demod
+        delta_s = nbsecs/Ld;
+        s = delta_s * i_frame;
+        %TODO H meegeven ipv W
+        visualize_demod(seq_demod, channel_est_mtx(:,i_frame), ...
+                                           used_carriers, s, delta_s);    
+    end
+    
     % remove padded zeros
     seq_demod = seq_demod(1,1:original_length);
 end

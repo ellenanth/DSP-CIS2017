@@ -5,7 +5,7 @@ function [seq_demod] = qam_demod(seq_mod, N_q, original_length)
     M = 2^N_q;
     
     seq_1 = qamdemod(seq_mod, M);
-    seq_2 = de2bi(seq_1);
+    seq_2 = de2bi(seq_1, length(seq_mod)*N_q);
     
     %convert matrix (each row is a binary) to a sequence (all binaries next
     %to each other)
