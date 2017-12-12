@@ -48,7 +48,6 @@ function [seq_demod, channel_est_mtx] = ofdm_demod(seq_mod, N, N_q, L, original_
     
     % initializing
     channel_est_mtx = zeros(N, Ld);
-    channel_est_inv_mtx = zeros(N, Ld);
     seq_demod = zeros(1, nb_data*Ld*N_q);
     
     % estimate channel frequency response based on trainblock
@@ -106,7 +105,6 @@ function [seq_demod, channel_est_mtx] = ofdm_demod(seq_mod, N, N_q, L, original_
             QAM_seq(1, (start_QAM+1):(start_QAM+N/2-1)),...
             N_q, nb_data*N_q);
         end_bit = start_bit + nb_data*N_q - 1;
-        disp("start bit: " + start_bit + ", end bit: " + end_bit);
         seq_demod(1, start_bit:end_bit) = frame_bitstream;
         start_bit = end_bit + 1;
         

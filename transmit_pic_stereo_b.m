@@ -1,5 +1,5 @@
 N = 512;
-N_q = 6;
+N_q = 3;
 L = 256;
 impulse_length = N/2-1;
 SNR = 15;
@@ -42,10 +42,9 @@ dummy_Rx = transpose(dummy_Rx);
                                             [], trainblock, 5, 1);
 H2 = channel_est_mtx_right(:,1);
 
-%% random impulse responses
-seq = randi([0,1], 1, 10000);
-h1 = transpose(randi([0,5], 1, impulse_length));
-h2 = transpose(randi([0,5], 1, impulse_length));
+%% create sequence
+[bitStream, imageData, colorMap, imageSize, bitsPerPixel] = ...
+                            imagetobitstream('image.bmp');  
 
 %% modulate
 %impulse response to transfer function (without DC)
@@ -62,7 +61,7 @@ b = conj(H2)./ (sqrt(H1.*conj(H1)+H2.*conj(H2)));
 
 %modulate
 %TODO flag voor visualize_on of of
-[ofdm_seq_a, ofdm_seq_b] = ofdm_mod_stereo(seq,a,b,N, N_q,L, []);
+[ofdm_seq_a, ofdm_seq_b] = ofdm_mod_stereo(bitStream,a,b,N, N_q,L, []);
 
 %% transmit over channel
 % Rx = fftfilt(h1, ofdm_seq_a,N) + fftfilt(h2, ofdm_seq_b,N);
@@ -79,11 +78,11 @@ Rx = transpose(Rx);
 num = (sqrt(H1 .* conj(H1) + H2 .* conj(H2)));
 % num = (sqrt(H2 .* conj(H2)));
 % num = H2;
-seq_demod = ofdm_demod_stereo(Rx, N, N_q, L, length(seq), ...
+seq_demod = ofdm_demod_stereo(Rx, N, N_q, L, length(bitStream), ...
                             [], num);
                         
 %% calculate BER
-BER_calc = ber(seq, seq_demod);
+BER_calc = ber(bitStream', seq_demod);
 disp("BER is " + BER_calc);
 
 %% plot H1 and H2
