@@ -4,7 +4,6 @@ fs = 16000;
 N = 512;
 N_q = 4;
 Lt = 20;
-Ld = 30;
 L = ceil(N/2);
 %BWusage = 70;
 
@@ -25,7 +24,7 @@ trainblock = qam_mod(seq, N_q);
                             imagetobitstream('image.bmp');  
 
 ofdmStream = ofdm_mod(bitStream', N, N_q, L, ...
-                            [], trainblock, Lt, Ld);
+                            [], trainblock, Lt);
 
 if simulation
     [simin, nbsecs, fs, sync_pulse] = initparams(ofdmStream, fs);

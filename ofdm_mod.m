@@ -10,7 +10,7 @@
 %Lt = number of training frames per training subpacket
 %Ld = number of data frames per data subpacket
 function [ofdm_seq] = ofdm_mod(seq, N, N_q, L, ...
-    used_carriers, training_frame, Lt, Ld)    
+    used_carriers, training_frame, Lt)    
     
     %check if N is even
     if mod(N,2) ~= 0

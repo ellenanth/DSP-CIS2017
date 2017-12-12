@@ -2,7 +2,6 @@ function [] = visualize_demod(seq_demod, frequency_response, used_carriers, s, d
     figure(1)
     
     %estimated time_domain channel impulse response
-    %TODO keep axes fixed
     subplot(2,2,1);
     plot(ifft(frequency_response));
     axis([0 600 -0.02 0.02])
@@ -17,7 +16,6 @@ function [] = visualize_demod(seq_demod, frequency_response, used_carriers, s, d
     title('Transmitted image'); drawnow;
 
     %estimated channel frequency response
-    %TODO keep axes fixed
     subplot(2,2,3);
     N = length(frequency_response);
     for i = 1:(N/2-1)

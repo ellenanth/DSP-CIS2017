@@ -86,6 +86,8 @@ function [seq_demod, channel_est_mtx] = ofdm_demod(seq_mod, N, N_q, L, original_
             
             %store results (H and W)
             W_k(:,i_frame-Lt) = W_k_update;
+            part1 = 1./conj(W_k_update);
+            part2 = flipud(1./W_k_update);
             channel_est_mtx(:, i_frame-Lt) = [0;1./conj(W_k_update);...
                                               0;flipud(1./W_k_update)];
             
@@ -111,10 +113,13 @@ function [seq_demod, channel_est_mtx] = ofdm_demod(seq_mod, N, N_q, L, original_
         start_bit = end_bit + 1;
         
         %visualize demod
-        %TODO is this delta_s correct?
         fs = 16000;
         delta_s = 1/fs;
+        %delta_s = nbsecs/Ld;
         s = delta_s * i_frame;
+        if start_bit == 133621
+           disp('test breakpoint');
+        end
         visualize_demod(seq_demod, channel_est_mtx(:,i_frame-Lt), ...
                                            used_carriers, s, delta_s);    
     end
