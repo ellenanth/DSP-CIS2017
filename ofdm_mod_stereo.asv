@@ -1,0 +1,12 @@
+function [ofdm_seq1, ofdm_seq2] = ofdm_mod_stereo(seq, h1, h2)   
+
+H1 = fft(h1);
+H2 = fft(h2);
+
+a = conj(H1)./(H1.*conj(H1)+H2.*conj(H2));
+b = conj(H2)./(H1.*conj(H1)+H2.*conj(H2));
+
+ofdm_seq1 = a.*seq;
+ofdm_seq2 = b.*seq;
+
+end

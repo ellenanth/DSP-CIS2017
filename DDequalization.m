@@ -10,7 +10,7 @@ delta = 0.5; %Deviation of initial value of W_k
 L_seq = N_q*L_QAM;
 seq = randi([0,1], 1, L_seq);
 X_k = qam_mod(seq, N_q);
-H_k = 2 + 1i;
+H_k = 2 + 2i;
 %TODO add noizzze
 Y_k = H_k * X_k;
 

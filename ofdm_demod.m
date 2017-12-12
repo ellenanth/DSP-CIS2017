@@ -61,16 +61,32 @@ function [seq_demod, channel_est_mtx] = ofdm_demod(seq_mod, N, N_q, L, original_
     % load estimation in channel_est matrix as initial value
     % TODO load W instead of H
     channel_est_mtx(:,1) = [0;channel_est;0;flipud(conj(channel_est))];
+    W_k = zeros(N/2-1,Ld);
+    W_k(:,1) = 1./conj(channel_est); %initial value
 
     %process data packet per frame
     QAM_seq = zeros(1, nb_data);
     start_bit = 1;
+    u = 1;
+    alpha = 1;
+    
     for i_frame = (Lt+1):(Lt+Ld)
         if i_frame ~= Lt+1
             %TODO adaptive filter
             %store result in channel_est_mtx(:,i_P-Lt)
+            X_received = conj(W_k(:,i_frame-(Lt+1))).*packet(1:N/2-1,i_frame);
+            X_received = transpose(X_received);
+            X_corrected = qam_demod(X_received,N_q,(N/2-1)*N_q);
+            X_corrected = qam_mod(X_corrected,N_q);
+            X_corrected = transpose(X_corrected);
+            X_received = transpose(X_received);
+            %disp(length(X_received));
+            %disp(length(X_corrected));
+            W_k(:,i_frame-Lt) = W_k(:,i_frame-(Lt+1)) + ...
+            (u.*packet(1:N/2-1,i_frame))./(alpha+conj(packet(1:N/2-1,i_frame)).*packet(1:N/2-1,i_frame)) ...
+            .* (X_corrected(:,1) - X_received(:,1));
+            channel_est_mtx(:,i_frame-Lt) = [0;W_k(:,i_frame-Lt);0;flipud(conj(W_k(:,i_frame-Lt)))];
         end
-
         % scale components with the inverse of the channel frequency
         % response
         % TODO maal W
@@ -90,7 +106,8 @@ function [seq_demod, channel_est_mtx] = ofdm_demod(seq_mod, N, N_q, L, original_
         start_bit = end_bit + 1;
         
         %visualize demod
-        delta_s = nbsecs/Ld;
+        delta_s = 0.5;
+        %delta_s = nbsecs/Ld;
         s = delta_s * i_frame;
         %TODO H meegeven ipv W
         visualize_demod(seq_demod, channel_est_mtx(:,i_frame), ...
